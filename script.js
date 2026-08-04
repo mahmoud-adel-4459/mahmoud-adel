@@ -44,25 +44,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Intersection Observer for fade-in animations
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.15
-    };
+    const fadeElements = document.querySelectorAll('.fade-in');
 
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target); // Stop observing once it's visible
+    if ('IntersectionObserver' in window) {
+        const observerOptions = {
+            root: null,
+            rootMargin: '50px 0px',
+            threshold: 0.05
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        fadeElements.forEach(el => observer.observe(el));
+    } else {
+        fadeElements.forEach(el => el.classList.add('visible'));
+    }
+
+    // Immediately reveal elements in viewport or when target hash matches
+    const revealVisible = () => {
+        fadeElements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                el.classList.add('visible');
             }
         });
-    }, observerOptions);
+    };
 
-    const fadeElements = document.querySelectorAll('.fade-in');
-    fadeElements.forEach(el => {
-        observer.observe(el);
-    });
+    revealVisible();
+    window.addEventListener('scroll', revealVisible, { passive: true });
+
+    // Safety fallback: reveal all fade-in elements after 800ms to guarantee no blank content on mobile
+    setTimeout(() => {
+        fadeElements.forEach(el => el.classList.add('visible'));
+    }, 800);
 
     // Custom Cursor Logic
     const cursorDot = document.querySelector('.cursor-dot');
@@ -115,17 +136,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 workCards.forEach(card => {
                     const category = card.getAttribute('data-category');
                     if (filter === 'all' || category === filter) {
+                        card.classList.remove('is-hidden');
+                        card.classList.add('visible');
                         card.style.display = 'flex';
-                        setTimeout(() => {
-                            card.style.opacity = '1';
-                            card.style.transform = 'translateY(0) scale(1)';
-                        }, 50);
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0) scale(1)';
                     } else {
-                        card.style.opacity = '0';
-                        card.style.transform = 'translateY(10px) scale(0.95)';
-                        setTimeout(() => {
-                            card.style.display = 'none';
-                        }, 300);
+                        card.classList.add('is-hidden');
+                        card.style.display = 'none';
                     }
                 });
             });
@@ -220,14 +238,14 @@ document.addEventListener('DOMContentLoaded', () => {
         typeLoop();
     }
 
-    // Vanilla Tilt Initialization
-    if (typeof VanillaTilt !== 'undefined') {
+    // Vanilla Tilt Initialization (Desktops / fine pointer only)
+    if (typeof VanillaTilt !== 'undefined' && window.matchMedia("(pointer: fine)").matches) {
         VanillaTilt.init(document.querySelectorAll(".tilt-card"), {
-            max: 15,
+            max: 12,
             speed: 400,
             glare: true,
             "max-glare": 0.2,
-            scale: 1.05
+            scale: 1.03
         });
     }
 });
