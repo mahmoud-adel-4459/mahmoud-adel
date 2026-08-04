@@ -12,26 +12,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile Navigation Toggle
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
-    const links = document.querySelectorAll('.nav-links li');
+    const links = document.querySelectorAll('.nav-links a');
 
     if (hamburger) {
-        hamburger.addEventListener('click', () => {
-            // Toggle Nav
-            navLinks.classList.toggle('nav-active');
-
-            // Burger Animation
+        hamburger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = navLinks.classList.toggle('nav-active');
             hamburger.classList.toggle('toggle');
+            document.body.classList.toggle('nav-open', isOpen);
         });
     }
 
     // Close mobile menu when a link is clicked
     links.forEach(link => {
         link.addEventListener('click', () => {
-            if (navLinks.classList.contains('nav-active')) {
+            if (navLinks && navLinks.classList.contains('nav-active')) {
                 navLinks.classList.remove('nav-active');
-                hamburger.classList.remove('toggle');
+                if (hamburger) hamburger.classList.remove('toggle');
+                document.body.classList.remove('nav-open');
             }
         });
+    });
+
+    // Reset navigation state on window resize (e.g. device orientation change)
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 992) {
+            if (navLinks) navLinks.classList.remove('nav-active');
+            if (hamburger) hamburger.classList.remove('toggle');
+            document.body.classList.remove('nav-open');
+        }
     });
 
     // Intersection Observer for fade-in animations

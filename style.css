@@ -17,10 +17,13 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
 }
 
 body {
@@ -31,6 +34,17 @@ body {
     overflow-x: hidden;
     position: relative;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body.nav-open {
+    overflow: hidden !important;
+    touch-action: none;
+}
+
+img, svg, video {
+    max-width: 100%;
+    height: auto;
 }
 
 /* Preloader */
@@ -300,7 +314,8 @@ p {
     position: fixed;
     top: 0;
     width: 100%;
-    padding: 1.25rem 0;
+    padding-top: max(1.25rem, calc(0.75rem + env(safe-area-inset-top)));
+    padding-bottom: 1.25rem;
     z-index: 100;
     background: rgba(7, 9, 15, 0.75);
     backdrop-filter: blur(20px);
@@ -1574,23 +1589,37 @@ section {
         right: -100%;
         top: 0;
         height: 100vh;
+        height: 100dvh;
         width: 100%;
-        background: rgba(7, 9, 15, 0.96);
+        background: rgba(7, 9, 15, 0.98);
         backdrop-filter: blur(25px);
         -webkit-backdrop-filter: blur(25px);
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 1.5rem;
-        padding: 5rem 1.5rem;
-        transition: right 0.4s ease;
+        justify-content: flex-start;
+        gap: 1.2rem;
+        padding-top: max(5rem, calc(4rem + env(safe-area-inset-top)));
+        padding-bottom: max(2rem, calc(1.5rem + env(safe-area-inset-bottom)));
+        padding-left: max(1.5rem, env(safe-area-inset-left));
+        padding-right: max(1.5rem, env(safe-area-inset-right));
+        transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         z-index: 99;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-links a {
+        font-size: 1.15rem;
+        padding: 0.6rem 1.2rem;
+        display: inline-block;
+        width: 100%;
+        text-align: center;
     }
 
     .mobile-menu-brand {
         display: block;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
 
     .mobile-menu-brand .brand-logo {
@@ -1605,8 +1634,8 @@ section {
 
     .mobile-menu-social {
         display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
+        gap: 1.25rem;
+        margin-top: 0.5rem;
     }
 
     .nav-links.nav-active {
@@ -1616,6 +1645,8 @@ section {
     .hamburger {
         display: block;
         z-index: 101;
+        padding: 8px;
+        margin-right: -8px;
     }
 
     .hamburger.toggle .line:nth-child(1) {
@@ -1677,8 +1708,8 @@ section {
    ========================================================================== */
 .whatsapp-widget-container {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: max(25px, calc(15px + env(safe-area-inset-bottom)));
+    right: max(20px, calc(15px + env(safe-area-inset-right)));
     z-index: 9990;
 }
 
@@ -1895,6 +1926,19 @@ section {
     .hero-btns .btn {
         width: 100%;
         min-width: 0;
+    }
+    .wa-chat-box {
+        width: calc(100vw - 40px);
+        max-width: 320px;
+        right: 0;
+    }
+}
+
+/* Touch & Mobile Cursor Disable */
+@media (hover: none) or (pointer: coarse) {
+    .cursor-dot,
+    .cursor-outline {
+        display: none !important;
     }
 }
 
